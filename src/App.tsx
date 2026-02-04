@@ -127,7 +127,7 @@ function App() {
     state.scoreA,
     state.scoreB,
     state.servingTeam,
-    state.serverPosition,
+    state.serverNumber,
     state.format
   );
 
