@@ -16,6 +16,7 @@ export const useGameState = (config: GameConfig) => {
       scoreB: currentState.scoreB,
       servingTeam: currentState.servingTeam,
       serverPosition: currentState.serverPosition,
+      serverNumber: currentState.serverNumber,
     };
   }, []);
 
@@ -61,6 +62,7 @@ export const useGameState = (config: GameConfig) => {
         scoreB: newScoreB,
         servingTeam: nextServer.servingTeam,
         serverPosition: nextServer.serverPosition,
+        serverNumber: nextServer.serverNumber,
         gameWinner: winner,
         sideSwitched: prev.sideSwitched || sideSwitch,
         history: newHistory,
@@ -81,6 +83,7 @@ export const useGameState = (config: GameConfig) => {
         scoreB: lastState.scoreB,
         servingTeam: lastState.servingTeam,
         serverPosition: lastState.serverPosition,
+        serverNumber: lastState.serverNumber,
         gameWinner: null,
         history: newHistory,
       };

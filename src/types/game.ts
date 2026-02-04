@@ -22,6 +22,7 @@ export interface GameState {
   // Server tracking
   servingTeam: Team;
   serverPosition: ServePosition;
+  serverNumber: 1 | 2;
   firstServer: Team;
   
   // Game progress
@@ -40,6 +41,7 @@ export interface GameStateSnapshot {
   scoreB: number;
   servingTeam: Team;
   serverPosition: ServePosition;
+  serverNumber: 1 | 2;
 }
 
 export interface GameConfig {
