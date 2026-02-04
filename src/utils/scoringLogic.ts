@@ -16,6 +16,7 @@ export const createInitialState = (config: GameConfig): GameState => {
     scoreB: 0,
     servingTeam: 'A',
     serverPosition: 'right',
+    serverNumber: 1,
     firstServer: 'A',
     gameWinner: null,
     sideSwitched: false,
@@ -32,27 +33,31 @@ export const shouldSwitchSides = (scoreA: number, scoreB: number): boolean => {
 export const getNextServer = (
   currentState: GameState,
   scoringTeam: Team
-): { servingTeam: Team; serverPosition: ServePosition } => {
+): { servingTeam: Team; serverPosition: ServePosition; serverNumber: 1 | 2 } => {
   if (currentState.scoringMode === 'rally') {
     // In rally scoring, the team that won the point serves
+    const newPosition = (scoringTeam === 'A' ? currentState.scoreA : currentState.scoreB) % 2 === 0 ? 'right' : 'left';
     return {
       servingTeam: scoringTeam,
-      serverPosition: (scoringTeam === 'A' ? currentState.scoreA : currentState.scoreB) % 2 === 0 ? 'right' : 'left',
+      serverPosition: newPosition,
+      serverNumber: 1,
     };
   }
 
   // Side-out scoring logic
   if (scoringTeam === currentState.servingTeam) {
-    // Same team scores, switch server position
+    // Same team scores, switch sides but keep same server
     return {
       servingTeam: currentState.servingTeam,
       serverPosition: currentState.serverPosition === 'right' ? 'left' : 'right',
+      serverNumber: currentState.serverNumber,
     };
   } else {
-    // Side out - other team gets serve, starts on right
+    // Side out - other team gets serve, starts on right with server 1
     return {
       servingTeam: scoringTeam,
       serverPosition: 'right',
+      serverNumber: 1,
     };
   }
 };
@@ -77,16 +82,14 @@ export const getScoreAnnouncement = (
   scoreA: number,
   scoreB: number,
   _servingTeam: Team,
-  serverPosition: ServePosition,
+  serverNumber: 1 | 2,
   format: 'doubles' | 'singles' | 'team'
 ): string => {
-  const serverNum = serverPosition === 'right' ? 1 : 2;
-  
   if (format === 'singles') {
     return `${scoreA}-${scoreB}`;
   }
-  
-  return `${scoreA}-${scoreB}-${serverNum}`;
+
+  return `${scoreA}-${scoreB}-${serverNumber}`;
 };
 
 export const getServerName = (state: GameState): string => {
