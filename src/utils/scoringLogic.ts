@@ -76,7 +76,7 @@ export const checkWinner = (
 export const getScoreAnnouncement = (
   scoreA: number,
   scoreB: number,
-  servingTeam: Team,
+  _servingTeam: Team,
   serverPosition: ServePosition,
   format: 'doubles' | 'singles' | 'team'
 ): string => {

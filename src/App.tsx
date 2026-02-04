@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { GameConfig, GameFormat, ScoringMode } from './types/game';
 import { useGameState } from './hooks/useGameState';
-import { getScoreAnnouncement, getServerName } from './utils/scoringLogic';
+import { getScoreAnnouncement, getServerName, shouldSwitchSides } from './utils/scoringLogic';
 import './index.css';
 
 function App() {
