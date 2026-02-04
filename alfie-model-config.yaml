@@ -1,0 +1,197 @@
+# Alfie 1.0 Multi-Model Architecture Configuration
+# Location: ~/.openclaw/config/models.yaml
+
+# ============================================
+# MAIN SESSION MODELS
+# ============================================
+
+models:
+  # THE BRAIN (Router & Life Coach)
+  # High-level reasoning, nuance, managing "Modes" (Parent vs PM)
+  brain:
+    primary:
+      provider: openrouter
+      model: moonshotai/kimi-k2.5
+      api_key: ${OPENROUTER_API_KEY}
+      timeout: 120
+    fallback:
+      provider: openai
+      model: gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+      timeout: 60
+    
+  # THE CODER (Junior Dev)
+  # Writing Shusha code, generating Linear tickets
+  # Optimized for velocity and syntax accuracy
+  coder:
+    primary:
+      provider: openrouter
+      model: minimax/minimax-01
+      api_key: ${OPENROUTER_API_KEY}
+      timeout: 120
+    fallback:
+      provider: openai
+      model: gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+      timeout: 60
+    
+  # THE EYES (Vision)
+  # Analyzing screenshots and screen recordings
+  vision:
+    primary:
+      provider: google
+      model: gemini-2.5-flash-preview-05-20
+      api_key: ${GEMINI_API_KEY}
+      timeout: 60
+    fallback:
+      provider: openrouter
+      model: google/gemini-2.5-pro-exp-03-25
+      api_key: ${OPENROUTER_API_KEY}
+      timeout: 60
+    
+  # THE HEARTBEAT (Monitor)
+  # Low-cost "always on" process
+  heartbeat:
+    primary:
+      provider: openrouter
+      model: anthropic/claude-3-haiku
+      api_key: ${OPENROUTER_API_KEY}
+      timeout: 30
+    fallback:
+      provider: openai
+      model: gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+      timeout: 30
+
+# ============================================
+# SUB-AGENT MODELS (for sessions_spawn)
+# ============================================
+
+sub_agents:
+  # Quick Research Agent
+  # Fast web searches, summarization
+  researcher:
+    model: openrouter/mistralai/mistral-7b-instruct
+    max_tokens: 2000
+    timeout: 60
+    
+  # Code Review Agent
+  # PR reviews, bug analysis
+  code_reviewer:
+    model: openrouter/deepseek/deepseek-coder
+    max_tokens: 4000
+    timeout: 90
+    
+  # Documentation Agent
+  # Writing docs, READMEs
+  documenter:
+    model: openrouter/anthropic/claude-3-haiku
+    max_tokens: 4000
+    timeout: 60
+    
+  # Testing Agent
+  # Generate tests, QA
+  tester:
+    model: openrouter/google/gemini-flash-1.5
+    max_tokens: 3000
+    timeout: 90
+    
+  # Creative Agent
+  # Naming, copywriting, content
+  creative:
+    model: openrouter/anthropic/claude-3-sonnet
+    max_tokens: 2000
+    timeout: 60
+
+# ============================================
+# TASK-SPECIFIC ROUTING
+# ============================================
+
+routing:
+  # Automatically select model based on task type
+  
+  coding_tasks:
+    - pattern: "write.*code|implement|create.*function|bug fix"
+      model: coder
+      
+  research_tasks:
+    - pattern: "search|find|look up|research"
+      agent: researcher
+      
+  vision_tasks:
+    - pattern: "image|screenshot|photo|analyze.*picture"
+      model: vision
+      
+  heartbeat_tasks:
+    - pattern: "check email|monitor|status"
+      model: heartbeat
+      
+  default: brain
+
+# ============================================
+# COST OPTIMIZATION
+# ============================================
+
+cost_control:
+  # Switch to cheaper models when budget runs low
+  
+  openrouter_threshold: 3.00  # USD - switch to OpenAI backup below this
+  
+  daily_budget: 5.00  # USD
+  
+  alert_channels:
+    - slack
+    - email
+
+# ============================================
+# FALLBACK CONFIGURATION
+# ============================================
+
+fallback:
+  # Global fallback if primary provider fails
+  
+  enabled: true
+  
+  providers:
+    - openrouter
+    - openai
+    - google
+  
+  # Retry logic
+  max_retries: 2
+  retry_delay_ms: 1000
+  
+  # Circuit breaker
+  circuit_breaker:
+    failure_threshold: 5
+    timeout_seconds: 60
+
+# ============================================
+# USAGE TRACKING
+# ============================================
+
+tracking:
+  log_usage: true
+  log_path: ~/.openclaw/logs/model-usage.log
+  
+  # Cost by model
+  track_cost_by:
+    - model
+    - task_type
+    - session
+    - agent
+
+# ============================================
+# EXAMPLE ENV VARS NEEDED
+# ============================================
+# 
+# Required:
+#   OPENROUTER_API_KEY=sk-or-...
+#   OPENAI_API_KEY=sk-...
+# 
+# Optional (for full features):
+#   GEMINI_API_KEY=AIzaSy...
+#   GITHUB_TOKEN=ghp_...
+#   LINEAR_API_KEY=lin_api_...
+#   TODOIST_API_KEY=...
+#   VERCEL_TOKEN=...
