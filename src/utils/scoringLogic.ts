@@ -53,12 +53,22 @@ export const getNextServer = (
       serverNumber: currentState.serverNumber,
     };
   } else {
-    // Side out - other team gets serve, starts on right with server 1
-    return {
-      servingTeam: scoringTeam,
-      serverPosition: 'right',
-      serverNumber: 1,
-    };
+    // Serving team lost the point
+    if (currentState.serverNumber === 1) {
+      // Server 1 loses, go to Server 2 (same team)
+      return {
+        servingTeam: currentState.servingTeam,
+        serverPosition: 'right',
+        serverNumber: 2,
+      };
+    } else {
+      // Server 2 loses, side-out to other team (Server 1)
+      return {
+        servingTeam: scoringTeam,
+        serverPosition: 'right',
+        serverNumber: 1,
+      };
+    }
   }
 };
 
@@ -93,9 +103,9 @@ export const getScoreAnnouncement = (
 };
 
 export const getServerName = (state: GameState): string => {
-  const serverPlayer = state.players.find(
-    p => p.team === state.servingTeam && 
-    (state.format === 'singles' || state.players.filter(pl => pl.team === state.servingTeam).indexOf(p) === (state.serverPosition === 'right' ? 0 : 1))
-  );
+  // Find the player who is the current server (Server 1 or Server 2)
+  const teamPlayers = state.players.filter(p => p.team === state.servingTeam);
+  // Server 1 is index 0, Server 2 is index 1
+  const serverPlayer = teamPlayers[state.serverNumber - 1];
   return serverPlayer?.name || `Team ${state.servingTeam}`;
 };
